@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
 
-const pages = [
+interface Page{
+    label: string;
+    link: string;
+}
+
+const pages: Page[] = [
   {
     label: "System Data",
     link: "/",
