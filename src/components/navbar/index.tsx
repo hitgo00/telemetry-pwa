@@ -35,7 +35,7 @@ function Navbar() {
       }}
     >
       {pages.map((page) => (
-        <Link to={page.link}>
+        <Link to={page.link} key={page.label}>
           <div style={{ padding: "8px" }}> {page.label}</div>
         </Link>
       ))}
