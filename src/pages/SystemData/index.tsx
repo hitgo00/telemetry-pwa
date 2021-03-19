@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import LinearProgress, {
-  LinearProgressProps,
-} from "@material-ui/core/LinearProgress";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 const extensionId = "ojohoekgfkecjbppebikfbjgbcanghhh";
 
@@ -18,7 +16,7 @@ const renderSystemData = (systemData: any) => {
         Memory {`(Available: ${memInfo.availableCapacity}/${memInfo.capacity})`}
       </h4>
       <LinearProgress
-        style={{ margin: "4px", height: "10px", maxWidth: "70%"  }}
+        style={{ margin: "4px", height: "10px", maxWidth: "70%" }}
         variant="determinate"
         value={
           ((memInfo.capacity - memInfo.availableCapacity) / memInfo.capacity) *
@@ -33,7 +31,10 @@ const renderSystemData = (systemData: any) => {
           const { usage } = proc;
           return (
             <div style={{ margin: "4px" }}>
-              <h5> {`${((usage.total - usage.idle) / usage.total) * 100}% usage`}</h5>
+              <h5>
+                {" "}
+                {`${((usage.total - usage.idle) / usage.total) * 100}% usage`}
+              </h5>
               <LinearProgress
                 variant="determinate"
                 style={{ height: "10px" }}
