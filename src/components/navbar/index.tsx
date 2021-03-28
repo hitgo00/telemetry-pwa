@@ -1,18 +1,18 @@
 import { Link } from "react-router-dom";
 
-interface Page{
-    label: string;
-    link: string;
+interface Page {
+  label: string;
+  link: string;
 }
 
 const pages: Page[] = [
   {
-    label: "System Data",
-    link: "/",
-  },
-  {
     label: "System Diagnostics Manager",
     link: "/diagnostics",
+  },
+  {
+    label: "System Data",
+    link: "/",
   },
   {
     label: "System State",
@@ -28,7 +28,6 @@ function Navbar() {
         background: "#0D56FE",
         height: "3rem",
         color: "white",
-
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",

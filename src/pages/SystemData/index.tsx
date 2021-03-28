@@ -1,75 +1,49 @@
 import { useEffect, useState } from "react";
-import LinearProgress from "@material-ui/core/LinearProgress";
-
-const extensionId = "ojohoekgfkecjbppebikfbjgbcanghhh";
-
-const renderSystemData = (systemData: any) => {
-  const { cpuInfo, memInfo } = systemData;
-
-  return (
-    <>
-      <h3>
-        {cpuInfo.modelName}, {`CPU architecture: ${cpuInfo.archName}`},{" "}
-        {`No of processors: ${cpuInfo.numOfProcessors}`}{" "}
-      </h3>
-      <h4>
-        Memory {`(Available: ${memInfo.availableCapacity}/${memInfo.capacity})`}
-      </h4>
-      <LinearProgress
-        style={{ margin: "4px", height: "10px", maxWidth: "70%" }}
-        variant="determinate"
-        value={
-          ((memInfo.capacity - memInfo.availableCapacity) / memInfo.capacity) *
-          100
-        }
-      />
-      <h4>Processors usage</h4>
-      <div
-        style={{ display: "flex", flexDirection: "column", maxWidth: "70%" }}
-      >
-        {cpuInfo.processors.map((proc: any) => {
-          const { usage } = proc;
-          return (
-            <div style={{ margin: "4px" }}>
-              <h5>
-                {" "}
-                {`${((usage.total - usage.idle) / usage.total) * 100}% usage`}
-              </h5>
-              <LinearProgress
-                variant="determinate"
-                style={{ height: "10px" }}
-                value={((usage.total - usage.idle) / usage.total) * 100}
-              />
-            </div>
-          );
-        })}
-      </div>
-    </>
-  );
-};
+import CpuInfo from "../../components/CpuInfo";
+import { CircularProgress } from "@material-ui/core";
+import { extensionId } from "../../constants";
+import { Message } from "./types";
 
 export default function SystemData() {
   const [systemData, setSystemData] = useState<any>(undefined);
 
   useEffect(() => {
+    let port: {
+      postMessage: (arg0: { m: string }) => void;
+      onMessage: { addListener: (arg0: (message: Message) => void) => void };
+      disconnect: () => void;
+    };
+    let interval: NodeJS.Timeout;
     //@ts-ignore
     if (chrome) {
       //@ts-ignore
-      // chrome.runtime.sendMessage(extensionId, { message: "helllo" }, console.log);
-      const port = chrome.runtime.connect(extensionId);
-      port.postMessage({ m: "hello" });
-      port.onMessage.addListener((message: any) => {
+      port = chrome.runtime.connect(extensionId);
+      port.postMessage({ m: "Hello from app!" });
+      port.onMessage.addListener((message: Message) => {
         if (Object.keys(message).length !== 0) {
-          console.log(message);
           setSystemData(message);
         }
       });
+      interval = setInterval(() => {
+        port.postMessage({ m: "Hello from app!" });
+      }, 1000);
     }
+
+    return () => {
+      if (interval) clearInterval(interval);
+      if (port) port.disconnect();
+    };
   }, []);
 
   return (
     <div style={{ marginLeft: "auto", marginRight: "auto" }}>
-      {systemData ? renderSystemData(systemData) : null}
+      {systemData ? (
+        <CpuInfo {...systemData} />
+      ) : (
+        <CircularProgress
+          style={{ position: "absolute", left: "50%", top: "50%" }}
+        />
+      )}
     </div>
   );
 }
