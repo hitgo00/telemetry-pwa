@@ -125,7 +125,6 @@ export default function CpuInfo(props: CpuInfoProps) {
               gutter={20}
               style={{ border: { stroke: "black" }, title: { fontSize: 20 } }}
               data={[
-                // { name: "One", symbol: { fill: "tomato", type: "star" } },
                 { name: "Kernel usage", symbol: { fill: "#3477eb" } },
                 { name: "User usage", symbol: { fill: "#8ab5ff" } },
               ]}
@@ -143,7 +142,7 @@ export default function CpuInfo(props: CpuInfoProps) {
               })}
             </VictoryStack>
             <VictoryAxis dependentAxis tickFormat={(tick) => `${tick}%`} />
-            <VictoryAxis tickFormat={processorsData[0].map((_, i) => i + 1)} />
+            <VictoryAxis label="(Hover on the bars to see realtime changes)" tickFormat={processorsData[0].map((_, i) => i + 1)} />
           </VictoryChart>
         </div>
       </div>
