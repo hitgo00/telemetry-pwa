@@ -10,14 +10,32 @@ import {
   VictoryTooltip,
 } from "victory";
 import { MemInfo, CpuInfo as ICpuInfo } from "../../pages/SystemData/types";
+import { wasmBrowserInstantiate, toGiga } from "../../constants";
+
+//loading and using WASN
+
+//@ts-ignore
+const go = new window.Go(); // Defined in wasm_exec.js. Don't forget to add this in your index.html.
+let wasmAddFn: CallableFunction;
+let wasmPercentageFn: CallableFunction;
+const runWasmAdd = async () => {
+  // Get the importObject from the go instance.
+  const importObject = go.importObject;
+
+  // Instantiate our wasm module
+  const wasmModule = await wasmBrowserInstantiate("./main.wasm", importObject);
+
+  // Allow the wasm_exec go instance, bootstrap and execute our wasm module
+  go.run(wasmModule.instance);
+
+  wasmAddFn = wasmModule.instance.exports.add as CallableFunction;
+  wasmPercentageFn = wasmModule.instance.exports.percentage as CallableFunction;
+};
+runWasmAdd();
 
 interface CpuInfoProps {
   cpuInfo: ICpuInfo;
   memInfo: MemInfo;
-}
-
-function toGiga(byte: number) {
-  return (byte / (1024 * 1024 * 1024)).toFixed(2);
 }
 
 export default function CpuInfo(props: CpuInfoProps) {
@@ -34,16 +52,20 @@ export default function CpuInfo(props: CpuInfoProps) {
     const kernelUsage: { x: number; y: number }[] = [];
     const userUsage: { x: number; y: number }[] = [];
 
-    cpuInfo.processors?.forEach((proc: any, index: number) => {
+    cpuInfo.processors?.forEach((proc, index: number) => {
       const { usage } = proc;
 
       kernelUsage.push({
-        x: index + 1,
-        y: (usage.kernel / usage.total) * 100,
+        x: wasmAddFn ? wasmAddFn(index, 1) : index + 1,
+        y: wasmPercentageFn
+          ? wasmPercentageFn(usage.kernel, usage.total)
+          : (usage.kernel / usage.total) * 100,
       });
       userUsage.push({
-        x: index + 1,
-        y: (usage.user / usage.total) * 100,
+        x: wasmAddFn ? wasmAddFn(index, 1) : index + 1,
+        y: wasmPercentageFn
+          ? wasmPercentageFn(usage.user, usage.total)
+          : (usage.user / usage.total) * 100,
       });
     });
     return [kernelUsage, userUsage];
@@ -142,7 +164,10 @@ export default function CpuInfo(props: CpuInfoProps) {
               })}
             </VictoryStack>
             <VictoryAxis dependentAxis tickFormat={(tick) => `${tick}%`} />
-            <VictoryAxis label="(Hover on the bars to see realtime changes)" tickFormat={processorsData[0].map((_, i) => i + 1)} />
+            <VictoryAxis
+              label="(Hover on the bars to see realtime changes)"
+              tickFormat={processorsData[0].map((_, i) => i + 1)}
+            />
           </VictoryChart>
         </div>
       </div>
