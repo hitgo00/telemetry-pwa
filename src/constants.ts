@@ -1,3 +1,4 @@
+//can use a constant after publishing to chrome web store
 export const extensionId = "ojohoekgfkecjbppebikfbjgbcanghhh";
 
 export function toGiga(byte: number) {

@@ -6,3 +6,7 @@ a{
 body{
   margin: 0px;
 }
+
+.MuiDialog-paperWidthSm {
+  max-width: 1000px !important;
+}
