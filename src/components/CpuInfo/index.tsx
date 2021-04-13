@@ -9,8 +9,18 @@ import {
   VictoryLegend,
   VictoryTooltip,
 } from "victory";
-import { MemInfo, CpuInfo as ICpuInfo } from "../../pages/SystemData/types";
+import {
+  MemInfo,
+  CpuInfo as ICpuInfo,
+  StorageInfo,
+} from "../../pages/SystemData/types";
 import { wasmBrowserInstantiate, toGiga } from "../../constants";
+import { Card } from "@material-ui/core";
+import { ComputerOutlined } from "@material-ui/icons";
+import MemoryIcon from "@material-ui/icons/Memory";
+import ProcessorIcon from "../../assets/Processor";
+import HashtagIcon from "../../assets/Hashtag";
+import RamIcon from "../../assets/Memory";
 
 //loading and using WASN
 
@@ -36,10 +46,14 @@ runWasmAdd();
 interface CpuInfoProps {
   cpuInfo: ICpuInfo;
   memInfo: MemInfo;
+  strInfo: StorageInfo[];
 }
 
 export default function CpuInfo(props: CpuInfoProps) {
-  const { cpuInfo, memInfo } = props;
+  const { cpuInfo, memInfo, strInfo } = props;
+
+  console.log(strInfo);
+
   const availableMemory =
     ((memInfo.capacity - memInfo.availableCapacity) / memInfo.capacity) * 100;
 
@@ -77,99 +91,192 @@ export default function CpuInfo(props: CpuInfoProps) {
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
-      <h3>
-        {cpuInfo.modelName}, {`CPU architecture: ${cpuInfo.archName}`},{" "}
-        {`No of processors: ${cpuInfo.numOfProcessors}`}{" "}
-      </h3>
-      <h4>
-        Memory{" "}
-        {`(Available: ${toGiga(memInfo.availableCapacity)}GB/${toGiga(
-          memInfo.capacity
-        )}GB)`}
-      </h4>
+      <div style={{ display: "flex", margin: "2%" }}>
+        <Card>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "12px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <ComputerOutlined style={{ width: "40px", height: "40px" }} />
+              <h2 style={{ marginLeft: "12px" }}>Model Name</h2>
+            </div>
+            <h3>{cpuInfo.modelName}</h3>
+          </div>
+        </Card>
+        <Card style={{ marginLeft: "14px", marginRight: "14px" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "12px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <ProcessorIcon style={{ width: "40px", height: "40px" }} />
+              <h2 style={{ marginLeft: "12px" }}>CPU Architecture</h2>
+            </div>
+            <h3>{cpuInfo.archName}</h3>
+          </div>
+        </Card>
+
+        <Card>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "12px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <HashtagIcon style={{ width: "40px", height: "40px" }} />
+              <h2 style={{ marginLeft: "12px" }}>Number of Processors</h2>
+            </div>
+            <h3>{cpuInfo.numOfProcessors}</h3>
+          </div>
+        </Card>
+      </div>
+
       <div
         style={{
           display: "flex",
           width: "100%",
           alignItems: "center",
           justifyContent: "center",
+          maxHeight: "540px",
         }}
       >
-        <div style={{ width: "40%" }}>
-          <svg viewBox="0 0 400 400" width="100%" height="100%">
-            <VictoryPie
-              standalone={false}
-              animate={{ duration: 1000 }}
+        <Card>
+          <div>
+            <VictoryChart
+              height={540}
               width={400}
-              height={400}
-              data={memoryData}
-              innerRadius={120}
-              cornerRadius={25}
-              labels={() => null}
-              style={{
-                data: {
-                  fill: ({ datum }) => {
-                    const color = datum.y > 90 ? "red" : "green";
-                    return datum.x === 1 ? color : "transparent";
-                  },
-                },
-              }}
-            />
-
-            <VictoryAnimation duration={1000} data={memoryData}>
-              {(newProps) => {
-                return (
-                  <VictoryLabel
-                    textAnchor="middle"
-                    verticalAnchor="middle"
-                    x={200}
-                    y={200}
-                    text={`Memory usage\n${availableMemory.toFixed(4)}%`}
-                    style={{ fontSize: 35 }}
-                  />
-                );
-              }}
-            </VictoryAnimation>
-          </svg>
-        </div>
-        <div>
-          <VictoryChart
-            height={700}
-            width={400}
-            domainPadding={{ x: 30, y: 20 }}
+              domainPadding={{ x: 30, y: 20 }}
+            >
+              <VictoryLegend
+                x={125}
+                y={50}
+                title="Processors usage"
+                centerTitle
+                orientation="horizontal"
+                gutter={20}
+                style={{ border: { stroke: "black" }, title: { fontSize: 20 } }}
+                data={[
+                  { name: "Kernel usage", symbol: { fill: "#3477eb" } },
+                  { name: "User usage", symbol: { fill: "#8ab5ff" } },
+                ]}
+              />
+              <VictoryStack colorScale={["#3477eb", "#8ab5ff"]}>
+                {processorsData.map((data, i) => {
+                  return (
+                    <VictoryBar
+                      data={data}
+                      labels={({ datum }) => `${datum.y}%`}
+                      labelComponent={<VictoryTooltip flyoutHeight={60} />}
+                      key={i}
+                    />
+                  );
+                })}
+              </VictoryStack>
+              <VictoryAxis dependentAxis tickFormat={(tick) => `${tick}%`} />
+              <VictoryAxis
+                label="(Hover on the bars to see realtime changes)"
+                tickFormat={processorsData[0].map((_, i) => i + 1)}
+              />
+            </VictoryChart>
+          </div>
+        </Card>
+        <Card
+          style={{
+            height: "80%",
+            width: "30%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            marginLeft: "10%",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
           >
-            <VictoryLegend
-              x={125}
-              y={50}
-              title="Processors usage"
-              centerTitle
-              orientation="horizontal"
-              gutter={20}
-              style={{ border: { stroke: "black" }, title: { fontSize: 20 } }}
-              data={[
-                { name: "Kernel usage", symbol: { fill: "#3477eb" } },
-                { name: "User usage", symbol: { fill: "#8ab5ff" } },
-              ]}
-            />
-            <VictoryStack colorScale={["#3477eb", "#8ab5ff"]}>
-              {processorsData.map((data, i) => {
-                return (
-                  <VictoryBar
-                    data={data}
-                    labels={({ datum }) => `${datum.y}%`}
-                    labelComponent={<VictoryTooltip flyoutHeight={60} />}
-                    key={i}
-                  />
-                );
-              })}
-            </VictoryStack>
-            <VictoryAxis dependentAxis tickFormat={(tick) => `${tick}%`} />
-            <VictoryAxis
-              label="(Hover on the bars to see realtime changes)"
-              tickFormat={processorsData[0].map((_, i) => i + 1)}
-            />
-          </VictoryChart>
-        </div>
+            <RamIcon style={{ width: "40px", height: "40px" }} />
+            <h2 style={{ marginLeft: "6px" }}>Memory</h2>
+          </div>
+
+          <div style={{ width: "100%" }}>
+            <svg viewBox="0 0 400 400" width="100%" height="100%">
+              <VictoryPie
+                standalone={false}
+                animate={{ duration: 1000 }}
+                width={400}
+                height={400}
+                data={memoryData}
+                innerRadius={105}
+                cornerRadius={14}
+                labels={() => null}
+                style={{
+                  data: {
+                    fill: ({ datum }) => {
+                      const color =
+                        datum.y > 99
+                          ? "red"
+                          : datum.y > 80
+                          ? "#EA4435"
+                          : datum.y > 70
+                          ? "#FFE27E"
+                          : "#3576Ea";
+                      return datum.x === 1 ? color : "transparent";
+                    },
+                  },
+                }}
+              />
+
+              <VictoryAnimation duration={1000} data={memoryData}>
+                {(newProps) => {
+                  return (
+                    <VictoryLabel
+                      textAnchor="middle"
+                      verticalAnchor="middle"
+                      x={200}
+                      y={200}
+                      text={`Usage\n${availableMemory.toFixed(4)}%`}
+                      style={{ fontSize: 35 }}
+                    />
+                  );
+                }}
+              </VictoryAnimation>
+            </svg>
+          </div>
+          <h3>
+            {`(Available: ${toGiga(memInfo.availableCapacity)}GB/${toGiga(
+              memInfo.capacity
+            )}GB)`}
+          </h3>
+        </Card>
       </div>
     </div>
   );

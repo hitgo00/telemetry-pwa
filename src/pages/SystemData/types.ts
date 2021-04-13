@@ -30,4 +30,12 @@ export interface Message {
     availableCapacity: number;
     capacity: number;
   }
+
+  
+  export interface StorageInfo {
+    capacity: number;
+    id: string;
+    name: string;
+    type: string;
+  }
   

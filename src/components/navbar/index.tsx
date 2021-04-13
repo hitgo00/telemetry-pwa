@@ -83,7 +83,7 @@ export default function PermanentDrawerLeft({
         <Toolbar>
           <Typography
             style={{ width: "100%", textAlign: "center" }}
-            variant="h6"
+            variant="h5"
             noWrap
           >
             Telemetry PWA
@@ -103,8 +103,8 @@ export default function PermanentDrawerLeft({
           style={{
             display: "flex",
             alignItems: "center",
-            paddingTop: "18px",
-            paddingBottom: "18px",
+            paddingTop: "4px",
+            paddingBottom: "4px",
             paddingLeft: "8px",
           }}
         >

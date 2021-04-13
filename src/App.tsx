@@ -9,30 +9,33 @@ import { ThemeProvider } from "@material-ui/styles";
 
 const darkTheme = createMuiTheme({
   palette: {
-    type: "dark",
+    // type: "dark",
+    primary: {
+      main: "#377AF0",
+    },
   },
 });
 
 function App() {
   return (
     <Router>
-      {/* <ThemeProvider theme={darkTheme}> */}
-      <div className="App">
-        <Navbar>
-          <Switch>
-            <Route path="/diagnostics">
-              <SystemDiagnosticsPage />
-            </Route>
-            <Route path="/state">
-              <SystemStatePage />
-            </Route>
-            <Route path="/">
-              <SystemDataPage />
-            </Route>
-          </Switch>
-        </Navbar>
-      </div>
-      {/* </ThemeProvider> */}
+      <ThemeProvider theme={darkTheme}>
+        <div className="App">
+          <Navbar>
+            <Switch>
+              <Route path="/diagnostics">
+                <SystemDiagnosticsPage />
+              </Route>
+              <Route path="/state">
+                <SystemStatePage />
+              </Route>
+              <Route path="/">
+                <SystemDataPage />
+              </Route>
+            </Switch>
+          </Navbar>
+        </div>
+      </ThemeProvider>
     </Router>
   );
 }
