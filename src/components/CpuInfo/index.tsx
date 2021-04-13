@@ -17,7 +17,6 @@ import {
 import { wasmBrowserInstantiate, toGiga } from "../../constants";
 import { Card } from "@material-ui/core";
 import { ComputerOutlined } from "@material-ui/icons";
-import MemoryIcon from "@material-ui/icons/Memory";
 import ProcessorIcon from "../../assets/Processor";
 import HashtagIcon from "../../assets/Hashtag";
 import RamIcon from "../../assets/Memory";
