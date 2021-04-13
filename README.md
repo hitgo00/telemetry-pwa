@@ -9,7 +9,7 @@ It is a Progressive Web App made for displaying the System data fethced by the [
 
 For stats calculations, two simple functions has been [exported](https://github.com/hitgo00/telemetry-pwa/blob/main/src/main.go) from Go file which is used in PWA using Web Assembly.
 
-# Checking it Out!
+## See it live!
 Open [https://telemetry-pwa.vercel.app/](https://telemetry-pwa.vercel.app/) in the Chrome browser, install PWA by clicking on download button on address bar.
 
 Then follow the instructions in popup:
