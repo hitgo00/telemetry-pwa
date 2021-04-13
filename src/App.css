@@ -1,12 +1,16 @@
-a{
+a {
   text-decoration: none;
   color: inherit;
 }
 
-body{
+body {
   margin: 0px;
 }
 
 .MuiDialog-paperWidthSm {
   max-width: 1000px !important;
+}
+
+tspan {
+  color: white;
 }
